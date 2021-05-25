@@ -26,6 +26,7 @@ class SubjectView extends StatefulWidget {
 
 class _SubjectViewState extends State<SubjectView> {
   double studentAvg;
+  int sumWeights;
   List<Evaluation> tempEvals = [];
 
   @override
@@ -96,13 +97,13 @@ class _SubjectViewState extends State<SubjectView> {
     });
 
     subjectEvals.forEach((e) {
-      studentAvg += e.value.value * (e.value.weight / 100);
+      studentAvg += e.value.value * e.value.weight;
     });
 
-    double weight =
-        subjectEvals.map((e) => e.value.weight / 100).reduce((a, b) => a + b);
+    sumWeights =
+        subjectEvals.map((e) => e.value.weight).reduce((a, b) => a + b);
 
-    if (weight > 0) studentAvg = studentAvg / weight;
+    if (sumWeights > 0) studentAvg = studentAvg / sumWeights;
 
     return Scaffold(
       appBar: AppBar(
@@ -234,6 +235,8 @@ class _SubjectViewState extends State<SubjectView> {
             backgroundColor: Colors.transparent,
             builder: (BuildContext context) => AverageCalculator(
               widget.subject,
+              sumWeights: sumWeights,
+              avg: studentAvg,
               multiplier: tempEvals.length + 1,
             ),
           );

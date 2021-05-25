@@ -6,12 +6,16 @@ import 'package:filcnaplo/data/models/evaluation.dart';
 import 'package:filcnaplo/data/context/app.dart';
 import 'package:filcnaplo/data/models/type.dart';
 import 'package:filcnaplo/data/models/subject.dart';
+import 'package:filcnaplo/helpers/averages.dart';
 
 class AverageCalculator extends StatefulWidget {
   final Subject subject;
   final int multiplier;
+  final double avg;
+  final int sumWeights;
 
-  AverageCalculator(this.subject, {this.multiplier = 1});
+  AverageCalculator(this.subject,
+      {this.multiplier = 1, this.avg = 0, this.sumWeights = 0});
 
   @override
   AverageCalculatorState createState() => AverageCalculatorState();
@@ -19,7 +23,7 @@ class AverageCalculator extends StatefulWidget {
 
 class AverageCalculatorState extends State<AverageCalculator> {
   int evaluation = 1;
-  double weight = 100;
+  double weight = 100; // should remember this
 
   @override
   Widget build(BuildContext context) {
@@ -127,11 +131,16 @@ class AverageCalculatorState extends State<AverageCalculator> {
   }
 
   Widget evalRadio(int value) {
+    double newAvg = (widget.sumWeights * widget.avg + value * weight) /
+        (widget.sumWeights + weight);
+
+    Color color = getAverageColor(newAvg);
+
     return Column(
       children: [
         Text(
           value.toString(),
-          style: TextStyle(fontSize: 23),
+          style: TextStyle(fontSize: 23, color: color),
         ),
         Radio<int>(
           value: value,
