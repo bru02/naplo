@@ -25,13 +25,25 @@ class _SubjectGraphState extends State<SubjectGraph> {
 
     // Filter data
     List<Evaluation> data = widget.data
-        .where((evaluation) => evaluation.value.weight != 0)
+        .where(
+          (evaluation) =>
+              evaluation.value.weight != 0 ||
+              evaluation.evaluationType.name == "SzorgalomErtek" ||
+              evaluation.evaluationType.name == "MagatartasErtek",
+        )
         .where((evaluation) => evaluation.type == EvaluationType.midYear)
-        .where((evaluation) => evaluation.evaluationType.name == "Osztalyzat")
+        .where(
+          (evaluation) =>
+              evaluation.evaluationType.name == "SzorgalomErtek" ||
+              evaluation.evaluationType.name == "MagatartasErtek" ||
+              evaluation.evaluationType.name == "Osztalyzat" ||
+              evaluation.id.contains("temp"),
+        )
         .toList();
 
     // Calculate average
-    double average = averageEvals(data);
+    double average = averageEvals(data,
+        weightless: data.every((element) => element.value.weight == 0));
 
     // Calculate graph color
     Color averagecolor = average >= 1 && average <= 5
@@ -56,6 +68,7 @@ class _SubjectGraphState extends State<SubjectGraph> {
 
     // Create FlSpots from points
     sortedData.forEach((dataList) {
+      // How does an empty dataList get here??
       double average = averageEvals(dataList);
 
       subjectData.add(FlSpot(
